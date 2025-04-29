@@ -1,0 +1,104 @@
+<UserControl x:Class="BOOTLOADERFREE.Views.InstallationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BOOTLOADERFREE.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="20,10">
+            <TextBlock Text="Installation du système" 
+                       FontSize="20" 
+                       FontWeight="SemiBold"/>
+            <TextBlock Text="Veuillez patienter pendant l'installation du système alternatif" 
+                       Margin="0,5,0,0" 
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Barre de progression -->
+            <TextBlock Grid.Row="0" 
+                       Text="{Binding Progress.CurrentOperation}" 
+                       Margin="0,0,0,5"/>
+            
+            <ProgressBar Grid.Row="1" 
+                         Height="20" 
+                         Value="{Binding Progress.PercentComplete}" 
+                         Maximum="100"/>
+            
+            <TextBlock Grid.Row="2" 
+                       Text="{Binding Progress.PercentComplete, StringFormat={}{0}% terminé}" 
+                       HorizontalAlignment="Right" 
+                       Margin="0,5,0,15"/>
+
+            <!-- Détails de l'installation -->
+            <Border Grid.Row="3" 
+                    Background="#F0F0F0" 
+                    BorderBrush="#CCCCCC" 
+                    BorderThickness="1" 
+                    Padding="10">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Étapes d'installation:" 
+                                   FontWeight="Bold" 
+                                   Margin="0,0,0,5"/>
+                        
+                        <TextBlock>
+                            <Run Text="• Étape "/>
+                            <Run Text="{Binding Progress.CurrentStep}"/>
+                            <Run Text=" de "/>
+                            <Run Text="{Binding Progress.TotalSteps}"/>
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            <Run Text="Opération en cours: "/>
+                            <Run Text="{Binding Progress.CurrentOperation}" FontWeight="Bold"/>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Boutons d'action -->
+            <StackPanel Grid.Row="4" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Center" 
+                        Margin="0,15,0,0">
+                <Button Content="Démarrer l'installation" 
+                        Command="{Binding StartInstallationCommand}" 
+                        Width="150" 
+                        Visibility="{Binding IsInstalling, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}"/>
+                
+                <Button Content="Annuler" 
+                        Command="{Binding CancelInstallationCommand}" 
+                        Width="150" 
+                        Visibility="{Binding IsInstalling, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Barre d'état -->
+        <Border Grid.Row="2" 
+                Background="{Binding InstallationCompleted, Converter={StaticResource BooleanToBackgroundConverter}}"
+                BorderBrush="#CCCCCC" 
+                BorderThickness="1" 
+                Padding="10" 
+                Margin="20,10">
+            <TextBlock Text="{Binding StatusMessage}" 
+                       TextWrapping="Wrap"/>
+        </Border>
+    </Grid>
+</UserControl>

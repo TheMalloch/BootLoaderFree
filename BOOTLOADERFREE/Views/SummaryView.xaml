@@ -1,0 +1,113 @@
+<UserControl x:Class="BOOTLOADERFREE.Views.SummaryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BOOTLOADERFREE.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="20,10">
+            <TextBlock Text="Résumé de l'installation" 
+                       FontSize="20" 
+                       FontWeight="SemiBold"/>
+            <TextBlock Text="L'installation est terminée. Voici un résumé des opérations effectuées." 
+                       Margin="0,5,0,0" 
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Statut de l'installation -->
+            <Border Grid.Row="0"
+                    Background="{Binding InstallationSuccessful, Converter={StaticResource BooleanToBackgroundConverter}}"
+                    BorderBrush="#CCCCCC"
+                    BorderThickness="1"
+                    Padding="10"
+                    Margin="0,0,0,10">
+                <TextBlock Text="{Binding InstallationSummary}"
+                           TextWrapping="Wrap"/>
+            </Border>
+
+            <!-- Prochaines étapes -->
+            <Grid Grid.Row="1" Margin="0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" 
+                           Text="Prochaines étapes:" 
+                           FontWeight="Bold" 
+                           Margin="0,0,0,5"/>
+                
+                <ListBox Grid.Row="1" 
+                         ItemsSource="{Binding NextSteps}" 
+                         BorderThickness="0"
+                         Background="Transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" 
+                                       TextWrapping="Wrap"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
+            <!-- Entrées de démarrage (si dual boot) -->
+            <Grid Grid.Row="2" 
+                  Visibility="{Binding BootEntries, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" 
+                           Text="Entrées de démarrage configurées:" 
+                           FontWeight="Bold" 
+                           Margin="0,0,0,5"/>
+                
+                <ListView Grid.Row="1" 
+                          ItemsSource="{Binding BootEntries}" 
+                          MaxHeight="150"
+                          BorderThickness="1"
+                          BorderBrush="#CCCCCC">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="2">
+                                <TextBlock>
+                                    <Run Text="{Binding DisplayName}"/>
+                                    <Run Text=" ["/>
+                                    <Run Text="{Binding IsDefault, StringFormat=Par défaut: {0}}"/>
+                                    <Run Text="]"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+        </Grid>
+
+        <!-- Actions -->
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Center" 
+                    Margin="20">
+            <Button Content="Redémarrer l'ordinateur" 
+                    Command="{Binding RestartComputerCommand}" 
+                    Width="200" 
+                    Height="30"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

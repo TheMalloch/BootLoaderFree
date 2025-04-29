@@ -1,0 +1,160 @@
+<UserControl x:Class="BOOTLOADERFREE.Views.DiskConfigurationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BOOTLOADERFREE.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="20,10">
+            <TextBlock Text="Configuration du disque" 
+                       FontSize="20" 
+                       FontWeight="SemiBold"/>
+            <TextBlock Text="Sélectionnez un disque et configurez la partition pour l'installation" 
+                       Margin="0,5,0,0" 
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <!-- Sélection du disque -->
+        <Grid Grid.Row="1" Margin="20,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <ComboBox Grid.Column="0" 
+                      ItemsSource="{Binding AvailableDisks}" 
+                      SelectedItem="{Binding SelectedDisk}"
+                      DisplayMemberPath="Model"
+                      IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}"/>
+            
+            <Button Grid.Column="1" 
+                    Content="Actualiser" 
+                    Margin="10,0,0,0" 
+                    Command="{Binding RefreshDisksCommand}"
+                    IsEnabled="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}"/>
+        </Grid>
+
+        <!-- Détails du disque et options de partitionnement -->
+        <ScrollViewer Grid.Row="2" Margin="20,10" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Affichage des informations du disque sélectionné -->
+                <Grid Visibility="{Binding SelectedDisk, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Border Grid.Row="0" 
+                            Background="#F0F0F0" 
+                            BorderBrush="#CCCCCC" 
+                            BorderThickness="1" 
+                            Padding="10" 
+                            Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold">
+                                <Run Text="Disque sélectionné: "/>
+                                <Run Text="{Binding SelectedDisk.Model, Mode=OneWay}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Numéro: "/>
+                                <Run Text="{Binding SelectedDisk.DiskNumber, Mode=OneWay}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Taille totale: "/>
+                                <Run Text="{Binding SelectedDisk.Size, Mode=OneWay, StringFormat={}{0:N0} octets}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Espace libre: "/>
+                                <Run Text="{Binding SelectedDisk.FreeSpace, Mode=OneWay, StringFormat={}{0:N0} octets}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Style de partition: "/>
+                                <Run Text="{Binding SelectedDisk.PartitionStyle, Mode=OneWay}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- Options de partitionnement -->
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Option: Créer une nouvelle partition -->
+                        <RadioButton Grid.Row="0" 
+                                    Content="Créer une nouvelle partition" 
+                                    IsChecked="{Binding CreateNewPartition}" 
+                                    Margin="0,5"/>
+                        
+                        <Grid Grid.Row="1" Margin="20,0,0,10" IsEnabled="{Binding CreateNewPartition}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" 
+                                      Text="Taille de la partition (MB): " 
+                                      VerticalAlignment="Center"/>
+                            
+                            <Slider Grid.Column="1" 
+                                   Minimum="10000" 
+                                   Maximum="500000" 
+                                   Value="{Binding RequestedPartitionSize}" 
+                                   Margin="10,0"/>
+                            
+                            <TextBlock Grid.Column="2" 
+                                      Text="{Binding RequestedPartitionSize, StringFormat={}{0:N0} MB}" 
+                                      VerticalAlignment="Center" 
+                                      MinWidth="80"/>
+                        </Grid>
+                        
+                        <!-- Option: Utiliser une partition existante -->
+                        <RadioButton Grid.Row="2" 
+                                    Content="Utiliser une partition existante" 
+                                    IsChecked="{Binding UseExistingPartition}" 
+                                    Margin="0,5"/>
+                        
+                        <ComboBox Grid.Row="3" 
+                                 Margin="20,0,0,0" 
+                                 ItemsSource="{Binding AvailableExistingPartitions}" 
+                                 SelectedItem="{Binding SelectedExistingPartition}" 
+                                 DisplayMemberPath="DriveLetter" 
+                                 IsEnabled="{Binding UseExistingPartition}"/>
+                    </Grid>
+                </Grid>
+                
+                <!-- Message de chargement -->
+                <TextBlock Text="Chargement des disques..." 
+                          HorizontalAlignment="Center" 
+                          VerticalAlignment="Center" 
+                          FontStyle="Italic" 
+                          Margin="0,20" 
+                          Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel>
+        </ScrollViewer>
+        
+        <!-- Barre d'état -->
+        <Border Grid.Row="3" 
+                Background="#F0F0F0" 
+                BorderBrush="#CCCCCC" 
+                BorderThickness="1" 
+                Padding="10" 
+                Margin="20,10">
+            <TextBlock Text="{Binding StatusMessage}" 
+                      TextWrapping="Wrap"/>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,23 @@
+<Application x:Class="BOOTLOADERFREE.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:BOOTLOADERFREE"
+             xmlns:viewmodels="clr-namespace:BOOTLOADERFREE.ViewModels"
+             xmlns:views="clr-namespace:BOOTLOADERFREE.Views"
+             xmlns:converters="clr-namespace:BOOTLOADERFREE.Converters"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Styles globaux -->
+                <ResourceDictionary Source="/Resources/Styles/GlobalStyles.xaml"/>
+                <!-- Modèles de données -->
+                <ResourceDictionary Source="/Resources/Styles/DataTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Converters -->
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <converters:BooleanToBackgroundConverter x:Key="BooleanToBackgroundConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
